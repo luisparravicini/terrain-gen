@@ -1,0 +1,3 @@
+[submodule "VoxelSpace"]
+	path = VoxelSpace
+	url = https://github.com/s-macke/VoxelSpace.git
