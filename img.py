@@ -19,4 +19,4 @@ for i in range(img.size[0]):
 
         img.putpixel((i, j), color)
 
-img.save('VoxelSpace/maps/terrain-1.png')
+img.save('maps/terrain-1.png')

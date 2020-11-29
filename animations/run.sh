@@ -1,13 +1,12 @@
 set -e
 
-mkdir -p images
+dir=`dirname "$0"`
+mkdir -p "$dir"/images
 
 echo delete
-rm -f images/*.png
-rm -f images/*.gif
+rm -f "$dir"/images/*.png
 
-echo anim
-python anim.py
+python "$dir"/anim.py
 
 echo convert
-gifsicle --colors 256 --optimize=2 --delay=10 --loop images/*.gif > anim.gif
+ffmpeg -i "$dir"/images/out%03d.png -y -c:v libx264 -r 25 -pix_fmt yuv420p terrain.mp4

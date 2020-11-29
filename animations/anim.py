@@ -1,15 +1,19 @@
 import math
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+from pathlib import Path
+
+base_dir = Path(__file__).parent
 
 # -----------------------------------------------------
 
 def Init(width, height, colorfilename, heightfilename):
     global colorimg, colormap, heightimg, heightmap, pal, screen, screenmap
-    colorimg = Image.open("../../maps/" + colorfilename)
+    maps_dir = base_dir.joinpath('..', 'maps')
+    colorimg = Image.open(maps_dir / colorfilename)
     colormap = colorimg.load()
 
-    heightimg = Image.open("../../maps/" + heightfilename)
+    heightimg = Image.open(maps_dir / heightfilename)
     heightmap = heightimg.load()
 
     # the colormap uses a color palette
@@ -45,7 +49,8 @@ def DrawVerticalLine(x, ytop, ybottom, c):
 def Store():
     Store.n -= 1
     if Store.n <= 0:
-        screen.save("images/out%03d.gif" % (Store.idx,), "GIF")
+        images_dir = base_dir.joinpath('images')
+        screen.save(images_dir / ("out%03d.png" % (Store.idx,)), "PNG")
         Store.idx += 1
         Store.n = Store.modulo
         Store.modulo += 3
@@ -175,7 +180,7 @@ def DrawFrontToBack(p, phi, height, distance, pmap):
 #    Store.n=1
 #    Store()
 
-Init(700, 512, "C7W.png", "D7.png")
+Init(700, 512, "terrain-1W.png", "terrain-1.png")
 for i in range(0, 64):
     print(i)
     DrawFrontToBack(Point(670, 500 - i*16), 0, 120, 800, Point(670, 500 - i*16))
