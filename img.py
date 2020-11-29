@@ -10,33 +10,33 @@ noise1 = PerlinNoise(octaves=3)
 palette = Image.open('palette-1.png').palette
 pal = palette.getdata()[1]
 
-xpix, ypix = 128, 128
+width = height = 128
 
-img = Image.new('L', size=(xpix, ypix), color='black')
-height = []
+img = Image.new('L', size=(width, height), color='black')
+height_data = []
 colors = []
-for i in range(img.size[0]):
-    for j in range(img.size[1]):
-        noise_val = noise1([i/xpix, j/ypix])
+for x in range(img.size[0]):
+    for y in range(img.size[1]):
+        noise_val = noise1([x / width, y / height])
         # if noise_val < 0:
         #   print(noise_val)
-        # noise_val += 0.5 * noise2([i/xpix, j/ypix])
-        # noise_val += 0.25 * noise3([i/xpix, j/ypix])
-        # noise_val += 0.125 * noise4([i/xpix, j/ypix])
+        # noise_val += 0.5 * noise2([x/width, y/height])
+        # noise_val += 0.25 * noise3([x/width, y/height])
+        # noise_val += 0.125 * noise4([x/width, y/height])
 
         value = (int)(noise_val * 255)
 
-        height.append(value)
+        height_data.append(value)
 
         color_index = (int)(noise_val * len(pal))
         colors.append(color_index)
 
 
-img.putdata(height)
+img.putdata(height_data)
 img.save('maps/terrain-1.png')
 
 
-img_color = Image.new('P', size=(xpix, ypix), color='black')
+img_color = Image.new('P', size=(width, height), color='black')
 img_color.palette = palette
 img_color.putdata(colors)
 img_color.save('maps/terrain-1W.png')
