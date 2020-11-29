@@ -8,12 +8,12 @@ noise3 = PerlinNoise(octaves=12)
 noise4 = PerlinNoise(octaves=24)
 
 
-palette = Image.open('palette-1.png').palette
-pal = palette.getdata()[1]
-max_colors = len(pal) / 3
-print(f'palette with {(int)max_colors} colors')
+palette_img = Image.open('palette-1.png')
+pal = [palette_img.getpixel((0, y)) for y in range(palette_img.size[1])]
+pal.reverse()
 
 width = height = 128
+water_level = 0.35
 
 img = Image.new('L', size=(width, height), color='black')
 height_data = []
@@ -35,15 +35,17 @@ for x in range(img.size[0]):
 
         height_data.append(value)
 
-        color_index = (int)(noise_val * max_colors)
-        colors.append(color_index)
+        if noise_val < water_level:
+            noise_val = 0
+        color_index = (int)(noise_val * len(pal))
+        colors.append(pal[color_index])
 
 
 img.putdata(height_data)
 img.save('maps/terrain-1.png')
 
 
-img_color = Image.new('P', size=(width, height), color='black')
-img_color.palette = palette
+img_color = Image.new('RGB', size=(width, height), color='black')
 img_color.putdata(colors)
+img_color.convert('P', palette=Image.ADAPTIVE, colors=64)
 img_color.save('maps/terrain-1W.png')
