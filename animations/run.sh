@@ -9,4 +9,4 @@ rm -f "$dir"/images/*.png
 python "$dir"/anim.py
 
 echo convert
-ffmpeg -i "$dir"/images/out%03d.png -y -c:v libx264 -r 25 -pix_fmt yuv420p terrain.mp4
+ffmpeg -i "$dir"/images/out%03d.png -y -c:v libx264 -r 25 -filter:v "setpts=2.5*PTS" -pix_fmt yuv420p terrain.mp4
