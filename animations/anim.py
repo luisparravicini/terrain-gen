@@ -2,6 +2,7 @@ import math
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from pathlib import Path
+import time
 
 base_dir = Path(__file__).parent
 
@@ -181,8 +182,11 @@ def DrawFrontToBack(p, phi, height, distance, pmap):
 #    Store()
 
 Init(700, 512, "terrain-1W.png", "terrain-1.png")
+print('frame\telapsed (ms)')
 for i in range(0, 64):
-    print(i)
+    start = time.time()
     DrawFrontToBack(Point(670, 500 - i*16), 0, 180, 800, Point(670, 500 - i*16))
     Store.n=1
     Store()
+    end = time.time()
+    print('%02d\t%4.2f' % (i, (end - start)*1000))
