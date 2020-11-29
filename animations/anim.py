@@ -183,6 +183,6 @@ def DrawFrontToBack(p, phi, height, distance, pmap):
 Init(700, 512, "terrain-1W.png", "terrain-1.png")
 for i in range(0, 64):
     print(i)
-    DrawFrontToBack(Point(670, 500 - i*16), 0, 120, 800, Point(670, 500 - i*16))
+    DrawFrontToBack(Point(670, 500 - i*16), 0, 180, 800, Point(670, 500 - i*16))
     Store.n=1
     Store()
