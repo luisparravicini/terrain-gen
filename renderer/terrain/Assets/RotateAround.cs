@@ -6,13 +6,14 @@ public class RotateAround : MonoBehaviour
 {
     public Transform transformCenter;
     public float speed;
-    float radius;
+    public float radius;
     float deltaY;
     float angle;
 
     void Start()
     {
-        radius = Vector3.Distance(transformCenter.position, transform.position);
+        if (radius == -1)
+            radius = Vector3.Distance(transformCenter.position, transform.position);
         deltaY = transform.position.y;
     }
 
