@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 
 [CustomEditor(typeof(VoxelRenderer))]
 public class VoxelRendererEditor : Editor
@@ -10,33 +11,19 @@ public class VoxelRendererEditor : Editor
 
         if (GUILayout.Button("Generate"))
         {
-            Generate();
+            ((VoxelRenderer)target).Generate();
         }
-    }
-
-    private void Generate()
-    {
-        VoxelRenderer container = (VoxelRenderer)target;
-        Transform containerTransform = container.transform;
-
-        RemoveChildren(containerTransform);
-
-        var centerPos = containerTransform.position - new Vector3(container.size.x / 2, 0, container.size.y / 2);
-        centerPos += new Vector3(0.5f, 0, 0.5f);
-
-        for (int x = 0; x < container.size.x; x++)
+        if (GUILayout.Button("Remove children"))
         {
-            for (int z = 0; z < container.size.y; z++)
-            {
-                var position = centerPos + new Vector3(x, 0, z);
-                GameObject obj = Instantiate(container.voxelPrefab, position, container.voxelPrefab.transform.rotation, containerTransform);
-            }
-
+            RemoveChildren();
         }
     }
 
-    private void RemoveChildren(Transform container)
+    private void RemoveChildren()
     {
+        Transform container = ((VoxelRenderer)target).transform;
+
+        Debug.Log("removing " + container.childCount + " objects");
         while (container.childCount > 0)
         {
             DestroyImmediate(container.GetChild(0).gameObject);
