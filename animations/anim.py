@@ -61,27 +61,6 @@ Store.modulo = 10
 
 # -----------------------------------------------------
 
-def Horline(p1, p2, offset, scale, horizon, pmap):
-    n = 700
-    dx = (p2.x - p1.x) / n
-    dy = (p2.y - p1.y) / n
-    for i in range(0, n):
-        xi = math.floor(p1.x) & 1023
-        yi = math.floor(p1.y) & 1023
-        xmap = (math.floor(p1.x) - pmap.x+256)
-        ymap = (math.floor(p1.y) - pmap.y+256)
-        if screen.width != 700:
-            if (xmap<512) and (ymap<512):
-                if (xmap>=0) and (ymap>=0):
-                    screenmap[xmap, ymap] = 0xFFFFFF
-                    screenmap[xmap+512, ymap] = 0xFFFFFF
-        DrawVerticalLine(i, (heightmap[xi, yi]+offset)*scale+horizon, 511, colormap[xi, yi])
-        p1.x += dx
-        p1.y += dy
-        Store()
-
-# -----------------------------------------------------
-
 hidden = np.zeros(700)
 
 def HorlineHidden(p1, p2, offset, scale, horizon, pmap):
@@ -93,11 +72,11 @@ def HorlineHidden(p1, p2, offset, scale, horizon, pmap):
         yi = math.floor(p1.y) & 1023
         xmap = (math.floor(p1.x) - pmap.x+256)
         ymap = (math.floor(p1.y) - pmap.y+256)
-        if screen.width != 700:
-            if (xmap<512) and (ymap<512):
-                if (xmap>=0) and (ymap>=0):
-                    screenmap[xmap, ymap] = 0xFFFFFF
-                    screenmap[xmap+512, ymap] = 0xFFFFFF
+        # if screen.width != 700:
+        #     if (xmap<512) and (ymap<512):
+        #         if (xmap>=0) and (ymap>=0):
+        #             screenmap[xmap, ymap] = 0xFFFFFF
+        #             screenmap[xmap+512, ymap] = 0xFFFFFF
         heightonscreen = (heightmap[xi, yi] + offset) * scale + horizon
         DrawVerticalLine(i, heightonscreen, hidden[i], colormap[xi, yi])
         if heightonscreen < hidden[i]:
@@ -120,31 +99,6 @@ def ClearAndDrawMaps(pmap):
         for j in range(0, 512):
             for i in range(0, 700):
                 screenmap[i, j] = 0xffa366
-    else:
-        for j in range(0, 512):
-            for i in range(0, 512):
-                h = heightmap[(i+pmap.x-256) & 1023, (j+pmap.y-256) & 1023]
-                c =  colormap[(i+pmap.x-256) & 1023, (j+pmap.y-256) & 1023]
-                screenmap[i,     j] = (pal[c*3+2]<< 16) | (pal[c*3+1] << 8) | pal[c*3+0]
-                screenmap[i+512, j] = (h<<16) | (h << 8) | h
-
-        for j in range(0, 512):
-            for i in range(0, 700):
-                screenmap[i+1024, j] = 0xffa366
-
-# -----------------------------------------------------
-
-def DrawBackToFront(p, phi, height, distance, pmap):
-    ClearAndDrawMaps(pmap)
-    for z in range(distance, 1, -2):
-        pl = Point(-z, -z)
-        pr = Point( z, -z)
-        pl = Rotate(pl, phi)
-        pr = Rotate(pr, phi)
-        Horline(
-            Point(p.x + pl.x, p.y + pl.y),
-            Point(p.x + pr.x, p.y + pr.y),
-            -height, -1./z*240., +120, pmap)
 
 # -----------------------------------------------------
 
@@ -182,11 +136,24 @@ def DrawFrontToBack(p, phi, height, distance, pmap):
 #    Store()
 
 Init(700, 512, "terrain-1W.png", "terrain-1.png")
-print('frame\telapsed (ms)')
-for i in range(0, 64):
-    start = time.time()
-    DrawFrontToBack(Point(670, 500 - i*16), 0, 180, 800, Point(670, 500 - i*16))
-    Store.n=1
-    Store()
-    end = time.time()
-    print('%02d\t%4.2f' % (i, (end - start)*1000))
+center = Point(590, 175)
+radius = 300
+for i in range(0, 360, 10):
+   start = time.time()
+   point = Point(center.x, center.y)
+   point.x += radius * math.sin(i/180.*3.141592)
+   point.y += radius * math.cos(i/180.*3.141592)
+   DrawFrontToBack(point, i/180.*3.141592, 280, 800, Point(512,512))
+   Store.n=1
+   Store()
+   end = time.time()
+   print('%02d\t%4.2f' % (i, (end - start)*1000))
+
+# print('frame\telapsed (ms)')
+# for i in range(0, 64):
+#     start = time.time()
+#     DrawFrontToBack(Point(670, 500 - i*16), 0, 180, 800, Point(670, 500 - i*16))
+#     Store.n=1
+#     Store()
+#     end = time.time()
+#     print('%02d\t%4.2f' % (i, (end - start)*1000))
