@@ -35,17 +35,20 @@ public class VoxelRenderer : MonoBehaviour
                 var position = centerPos + new Vector3(x, 0, z);
                 GameObject obj = Instantiate(voxelPrefab, position, voxelPrefab.transform.rotation, containerTransform);
 
-                var height = heights[x + z * x].grayscale;
+                var height = heights[x + z * size.x].grayscale;
                 var scale = obj.transform.localScale;
                 scale.y = height * maxHeight;
                 obj.transform.localScale = scale;
 
-                var color = colors[x + z * x];
+                var color = colors[x + z * size.x];
                 //if (!materials.ContainsKey(color))
                 //    materials[color] = 1;
+                //if (x %2 == 1)
+                //    color = (z % 2 == 1) ? Color.black : Color.white;
+                //else
+                //    color = (z % 2 == 0) ? Color.black : Color.white;
                 obj.GetComponentInChildren<MeshRenderer>().material.color = color;
             }
-
         }
         //Debug.Log("different colors: "+materials.Count);
     }
