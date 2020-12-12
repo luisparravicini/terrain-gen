@@ -1,6 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+[System.Serializable]
+public struct NoiseOctave
+{
+    public float octave;
+    public float amplitude;
+}
+
+
 [RequireComponent(typeof(MeshFilter))]
 public class TerrainRenderer : MonoBehaviour
 {
@@ -8,32 +16,32 @@ public class TerrainRenderer : MonoBehaviour
     float maxHeight;
     public Gradient heightColors;
     Vector2 noiseOffset;
-
-
-    [Range(1, 6)]
     public int Scale = 50;
-
-    public float Frequency_01 = 5f;
-    public float FreqAmp_01 = 3f;
-
-    public float Frequency_02 = 6f;
-    public float FreqAmp_02 = 2.5f;
-
-    public float Frequency_03 = 3f;
-    public float FreqAmp_03 = 1.5f;
-
-    public float Frequency_04 = 2.5f;
-    public float FreqAmp_04 = 1f;
+    public NoiseOctave[] octaves;
+    public bool random;
 
     //private void Start()
     //{
-    //    GenerateMesh();
+    //    InvokeRepeating(nameof(GenerateMesh),0,2);
     //}
+
+    private void Update()
+    {
+        GenerateMesh();
+    }
 
     public void GenerateMesh()
     {
-        noiseOffset = new Vector2(Random.Range(0, 99999f), Random.Range(0, 99999f));
+        if (random)
+        {
+            noiseOffset = new Vector2(Random.Range(0, 99999f), Random.Range(0, 99999f));
+        }
+        else
+        {
+            noiseOffset = Vector2.zero;
+        }
         Debug.Log("using noise offset: " + noiseOffset);
+
 
         MeshFilter meshFilter = GetComponent<MeshFilter>();
         Mesh mesh = new Mesh();
@@ -57,6 +65,7 @@ public class TerrainRenderer : MonoBehaviour
         }
         mesh.vertices = vertices.ToArray();
         Debug.Log("vertices: " + mesh.vertices.Length);
+        Debug.Log("maxHeight: " + maxHeight);
 
         List<Color> colors = new List<Color>(vertices.Count);
         for (int i = 0; i < vertices.Count; i++)
@@ -95,17 +104,33 @@ public class TerrainRenderer : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(size.x, 1, size.y));
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        if (!Application.isPlaying)
+            return;
+
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+
+        Vector3[] vertices = mesh.vertices;
+        int[] tris = mesh.triangles;
+        for (int i = 0; i < tris.Length; i += 3)
+        {
+            Gizmos.DrawLine(vertices[tris[i]], vertices[tris[i + 1]]);
+            Gizmos.DrawLine(vertices[tris[i + 1]], vertices[tris[i + 2]]);
+            Gizmos.DrawLine(vertices[tris[i + 2]], vertices[tris[i]]);
+        }
+    }
+
     float Calculate(float x, float z)
     {
-        float[] octaveFrequencies = new float[] { Frequency_01, Frequency_02, Frequency_03, Frequency_04   };
-        float[] octaveAmplitudes = new float[] { FreqAmp_01, FreqAmp_02, FreqAmp_03, FreqAmp_04 };
         float y = 0;
 
-        for (int i = 0; i < octaveFrequencies.Length; i++)
+        for (int i = 0; i < octaves.Length; i++)
         {
-            y += octaveAmplitudes[i] * Mathf.PerlinNoise(
-                     octaveFrequencies[i] * x + noiseOffset.x * Scale,
-                     octaveFrequencies[i] * z + noiseOffset.y * Scale);
+            var octave = octaves[i];
+            y += octave.amplitude * Mathf.PerlinNoise(
+                     (octave.octave * x / size.x + noiseOffset.x) * Scale,
+                     (octave.octave * z / size.y + noiseOffset.y) * Scale);
 
         }
 
