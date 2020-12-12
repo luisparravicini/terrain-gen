@@ -1,11 +1,6 @@
-from perlin_noise import PerlinNoise
 from PIL import Image
-import math
-
-noise1 = PerlinNoise(octaves=3)
-noise2 = PerlinNoise(octaves=6)
-noise3 = PerlinNoise(octaves=12)
-noise4 = PerlinNoise(octaves=24)
+import numpy as np
+from perlin_numpy import generate_fractal_noise_2d
 
 
 palette_img = Image.open('palette-1.png')
@@ -18,30 +13,32 @@ water_level = 0.35
 img = Image.new('L', size=(width, height), color='black')
 height_data = []
 colors = []
-sqrt_two = math.sqrt(2)
-min_value = sqrt_two / 2
-for x in range(img.size[0]):
-    for y in range(img.size[1]):
-        noise_val = noise1([x / width, y / height])
-        noise_val += 0.5 * noise2([x / width, y / height])
-        noise_val += 0.25 * noise3([x / width, y / height])
-        noise_val += 0.125 * noise4([x / width, y / height])
 
-        # normalize value to [0..1]
-        noise_val += min_value
-        noise_val /= sqrt_two
+np.random.seed(0)
+noise = generate_fractal_noise_2d((128, 128), (8, 8), 5)
 
-        value = (int)(noise_val * 255)
+# values come in the [-1, 1] range
+# noise = np.clip(noise + 1, 0, 1)
 
-        height_data.append(value)
-
-        if noise_val < water_level:
-            noise_val = 0
-        color_index = (int)(noise_val * len(pal))
-        colors.append(pal[color_index])
+height_data = (noise * 255).astype(int)
 
 
-img.putdata(height_data)
+colors = (noise * len(pal)).astype(int)
+
+
+def convert_to_palette(x):
+    global water_level
+    global pal
+
+    if x < water_level:
+        return 0
+    x = min(len(pal) - 1, x)
+    return pal[x]
+
+
+colors = list(map(convert_to_palette, colors.flatten().tolist()))
+
+img.putdata(height_data.flatten())
 img.save('maps/terrain-1.png')
 
 
