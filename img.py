@@ -14,7 +14,7 @@ img = Image.new('L', size=(width, height), color='black')
 height_data = []
 colors = []
 
-np.random.seed(0)
+# np.random.seed(0)
 noise = generate_fractal_noise_2d((128, 128), (8, 8), 5)
 
 # values come in the [-1, 1] range
@@ -31,7 +31,7 @@ def convert_to_palette(x):
     global pal
 
     if x < water_level:
-        return 0
+        x = 0
     x = min(len(pal) - 1, x)
     return pal[x]
 
