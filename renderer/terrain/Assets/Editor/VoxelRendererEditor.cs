@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
-[CustomEditor(typeof(VoxelRenderer))]
+[CustomEditor(typeof(TerrainRenderer))]
 public class VoxelRendererEditor : Editor
 {
     public override void OnInspectorGUI()
@@ -11,7 +11,7 @@ public class VoxelRendererEditor : Editor
 
         if (GUILayout.Button("Generate"))
         {
-            ((VoxelRenderer)target).Generate();
+            ((TerrainRenderer)target).GenerateMesh();
         }
         if (GUILayout.Button("Remove children"))
         {
@@ -21,7 +21,7 @@ public class VoxelRendererEditor : Editor
 
     private void RemoveChildren()
     {
-        Transform container = ((VoxelRenderer)target).transform;
+        Transform container = ((TerrainRenderer)target).transform;
 
         Debug.Log("removing " + container.childCount + " objects");
         while (container.childCount > 0)
