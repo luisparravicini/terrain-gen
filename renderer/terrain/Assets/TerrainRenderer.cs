@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public struct NoiseOctave
 {
-    public float octave;
+    public float frequency;
     public float amplitude;
 }
 
@@ -129,8 +129,8 @@ public class TerrainRenderer : MonoBehaviour
         {
             var octave = octaves[i];
             y += octave.amplitude * Mathf.PerlinNoise(
-                     (octave.octave * x / size.x + noiseOffset.x) * Scale,
-                     (octave.octave * z / size.y + noiseOffset.y) * Scale);
+                     (octave.frequency * x / size.x + noiseOffset.x) * Scale,
+                     (octave.frequency * z / size.y + noiseOffset.y) * Scale);
 
         }
 
