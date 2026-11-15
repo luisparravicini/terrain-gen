@@ -28,5 +28,7 @@ public class VoxelRendererEditor : Editor
         {
             DestroyImmediate(container.GetChild(0).gameObject);
         }
+
+        ((TerrainRenderer)target).GetComponent<MeshFilter>().mesh = new Mesh();
     }
 }

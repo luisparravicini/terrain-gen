@@ -19,15 +19,17 @@ public class TerrainRenderer : MonoBehaviour
     public int Scale = 50;
     public NoiseOctave[] octaves;
     public bool random;
+    public GameObject voxelPrefab;
 
-    //private void Start()
-    //{
-    //    InvokeRepeating(nameof(GenerateMesh),0,2);
-    //}
+    private void Start()
+    {
+        //    InvokeRepeating(nameof(GenerateMesh),0,2);
+        Generate();
+    }
 
     private void Update()
     {
-        GenerateMesh();
+        //GenerateMesh();
     }
 
     public void GenerateMesh()
@@ -135,5 +137,38 @@ public class TerrainRenderer : MonoBehaviour
         }
 
         return y;
+    }
+
+
+    public void Generate()
+    {
+        Transform containerTransform = transform;
+
+        //RemoveChildren(containerTransform);
+
+        var centerPos = containerTransform.position - new Vector3(size.x / 2, 0, size.y / 2);
+        centerPos += new Vector3(0.5f, 0, 0.5f);
+
+        int maxHeight = 10;
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int z = 0; z < size.y; z++)
+            {
+                var position = centerPos + new Vector3(x, 0, z);
+                GameObject obj = Instantiate(voxelPrefab, position, voxelPrefab.transform.rotation, containerTransform);
+
+                var height = Calculate(x, z);
+
+                var scale = obj.transform.localScale;
+                scale.y = height * maxHeight;
+                obj.transform.localScale = scale;
+
+                //var color = colors[x + z * x];
+                //if (!materials.ContainsKey(color))
+                //    materials[color] = 1;
+                //obj.GetComponentInChildren<MeshRenderer>().material.color = color;
+            }
+
+        }
     }
 }
